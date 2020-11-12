@@ -2,8 +2,7 @@
 '''
 This current program is a calculator with a user interface using
 tkinter. So far the GUI is set, and the buttons allow for user input.
-The subtraction function works for two numbers and the clear button is
-functional.
+All the operators work to an extent.
 
 Things to add:
 functionality to the rest of the operating buttons.
@@ -25,7 +24,7 @@ global operator
 
 user_in = []
 numbers = []
-answer = int
+answer = 0
 operator = ' '
 
 # create the window
@@ -33,9 +32,11 @@ root = tk.Tk()
 
 root.configure(background="#ffd8d4", padx= 15, pady=15)
 root.title("Daisy Calculator")
+root.iconphoto(False, tk.PhotoImage(file='img/daisy_icon.png'))
 root.geometry("270x400")
 root.resizable(0, 0)
 
+# setting the frames to group the gui elements
 frame1 = tk.Frame(root, padx=10, pady=10, bg="white")
 frame1.grid(row = 1,columnspan=5)
 frame2 = tk.Frame(root,padx=0, pady=10, bg="#ffd8d4")
@@ -47,6 +48,7 @@ frame4.grid(rowspan = 6,row = 7, columnspan = 3)
 frame5 = tk.Frame(root,padx=0, pady=0, bg="#ffd8d4")
 frame5.grid( rowspan=7, row = 6, columnspan = 6, column = 3)
 
+# setting the images to be used in the program
 img1 = PhotoImage(file="img/num-01.png")
 img2 = PhotoImage(file="img/num-02.png")
 img3 = PhotoImage(file="img/num-03.png")
@@ -124,7 +126,6 @@ def conf_button(buttons):
     j = 0
     k = 0
     for button,n in buttons.items():
-     print(i)
      button.configure(width=50, height=50, fg="#fc74aa", bg="white", activeforeground="white", activebackground="light blue", bd=0,relief="flat", image=n)
      if (i<10):
          
@@ -133,13 +134,10 @@ def conf_button(buttons):
             k+=1
             j=0
          j = j + 1
-         print(i)
      if (i >= 10 and i <14):
-         print("rere")
          k+=1
          j=1
      if (i >= 14):
-         print("r")
          k=0
          j+=1
      i+=1
@@ -150,7 +148,7 @@ def click_button(n):
     '''
     This function determines what happens when a button is clicked
     if the buttons 0-9 are clicked, it registers it to a list.
-    If any of the operators are clicked (in this case '-') then it
+    If any of the operators are clicked then it
     takes the list of digits that was made and concatanates them into a string.
     That way once the user clicks on the '=' then each of the concatanated
     string is cast into an int and the operator that was saved will be used for the final
@@ -164,14 +162,16 @@ def click_button(n):
     '''
     i = str(n)
     if (n == '-'):
-        global operator
-        operator = '-'
-        coef=""
-        for i in user_in:
-            coef = coef + i
-        numbers.append(coef)
-        label.configure(text='-')
-        user_in.clear()
+        set_operations(n)
+        return
+    if (n == '+'):
+        set_operations(n)
+        return
+    if (n == '*'):
+        set_operations(n)
+        return
+    if (n == '/'):
+        set_operations(n)
         return
     if (n == 'C'):
         label.configure(text='')
@@ -179,18 +179,58 @@ def click_button(n):
         numbers.clear()
         return
     if (n == '='):
-        
         coef =""
         for i in user_in:
             coef = coef + i
+        user_in.clear()
         numbers.append(coef)
-        if(operator == '-'):
-            answer = int(numbers[0])-int(numbers[1])
-            label.configure(text=answer)
+        j=0
+        for i in numbers:
+            if (i == '-'):
+                answer = int(numbers[j-1]) - int(numbers[j+1])
+                numbers[j+1] = str(answer)
+            if (i == '+'):
+                answer = int(numbers[j-1]) + int(numbers[j+1])
+                numbers[j+1] = str(answer)
+            if (i == '*'):
+                answer = int(numbers[j-1]) * int(numbers[j+1])
+                numbers[j+1] = str(answer)
+            if (i == '/'):
+                answer = int(numbers[j-1]) / int(numbers[j+1])
+                numbers[j+1] = str(answer)
+            j+=1
+        numbers.clear()
+        user_in.append(str(answer))
+        label.configure(text=answer)
         return    
     user_in.append(i)
     
     label.configure(text=user_in)
+
+def set_operations(n):
+    '''
+    This function sets the operations
+
+    :param n: value
+    :type n: int or char
+
+    :return: no value
+    :rtype: none
+    '''
+    if (len(user_in)==0 and len(numbers)==0):
+        label.configure(text="Enter numbers please!")
+        return
+    if (len(user_in)==0):
+        label.configure(text="Enter numbers please!")
+        return    
+    coef=""
+    for i in user_in:
+        coef = coef + i
+    numbers.append(coef)
+    numbers.append(n)
+    label.configure(text=n)
+    user_in.clear()
+    return
    
      
 
